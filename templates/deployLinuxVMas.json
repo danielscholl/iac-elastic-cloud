@@ -84,19 +84,12 @@
         "18.04-LTS"
       ]
     },
-    "dockerSetup": {
-      "type": "string",
-      "metadata": {
-        "description": "Custom Script dockersetup.sh"
-      },
-      "defaultValue": "H4sIANwZ6lsCA41RwUoDMRA9u18xtoLtIc1FPAgeRKUIHoTiSUVmk9ltaJqEZNa24Meb7C69iMWcJvNm3puZNz2XtXGyxrSuqunZa9DIBAHVBlsC4zTtKwwsWmLoerCUPbnEaC2w9zYdcTNmxQHeK8ivABzRpeAjizVzSCOiUCiKbBqjMuUx20U7hsk3vMNIIkQfSiUlofx2613Rv9MaHrzaULxM4JvMYtDC8mUJGzpUPY1o0uoZes0bKbXfOetRL3TftchU0hrX7WVXd4472YYWvvuBMwNg5hdFaEXcBchr1ZYgUvBVhkQpK59k2Mdx2YmmGt4wqvUtbvX11ce/tYf+i5lN9WckS5gIhErzIT9oT/4yB2bYonHzEybZcmGGL4rJeJfPNZ4O7h9/WTeMmL3JJlY/PoyZxBwCAAA="
-    },
     "customScript": {
       "type": "string",
       "metadata": {
         "description": "Custom Script setup.sh"
       },
-      "defaultValue": "H4sIAN/k6lsCA1NW1E/KzNNPSizO4OVSVkhOLFEoTi0pLdArzlCoUUivyixQ0LUEsoAKUs1MFHTLDXi5eLlSkzPyFZQ8UnNy8hXC84tyUhT09PSUeLkAijKy9E4AAAA="
+      "defaultValue": "H4sIANhtDl4CAz3OMQ7CMAwF0JmcwqizKQNC4ggcgI3FTd02oiRW7KqAODwpqurp678/uNrXTYh1Qzq4CjwZKNskBx3gC/0nCOClpOJ8PgHOR+eq3U1aMgYh/6CeIcSWX47EsGeD6Y/L7BrVaBzBUhp187C2+Ia7g3ILWKaokrLhYCa6iif0nC10oTzGWzvlcY2aOpspM0pOsixZ0afnM0X3A42JH63ZAAAA"
     }
   },
   "variables": {

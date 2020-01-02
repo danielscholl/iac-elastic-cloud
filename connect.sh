@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-# Copyright (c) 2017, cloudcodeit.com
 #
 #  Purpose: SSH Connect to the Azure Virtual Machine
 #  Usage:

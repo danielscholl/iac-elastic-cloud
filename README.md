@@ -49,11 +49,11 @@ export ANSIBLE_CONFIG=./.ansible.cfg
 
 ### Validate Connectivity
 
-Check and validate ansible connectivity once provisioning has been completed and begin to configure the node servers.
+Check and validate ansible connectivity once provisioning has been completed and begin to configure the servers.
 
 ```bash
 ansible all -m ping  #Check Connectivity
-ansible-playbook ansible/playbooks/main.yml  # Provision the node Servers
+ansible-playbook ansible/playbooks/main.yml  # Provision the  Servers
 ```
 
 
