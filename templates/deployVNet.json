@@ -1,0 +1,209 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "prefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Small unique string."
+      },
+      "minLength": 2,
+      "maxLength": 5
+    },
+    "vnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Network Address Prefix CIDR"
+      }
+    },
+    "subnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 1 Address Prefix CIDR"
+      }
+    },
+    "servicePrincipalObjectId": {
+      "metadata": {
+        "description": "Object ID of Service Principal"
+      },
+      "type": "securestring"
+    },
+    "remoteAccessACL": {
+      "type": "string",
+      "metadata": {
+        "description": "Remote Access CIDR"
+      },
+      "defaultValue": "Internet"
+    }
+  },
+  "variables": {
+    "vnetName": "[concat(parameters('prefix'), '-vnet')]",
+    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
+    "subnetName": "subnet",
+    "subNetId": "[concat(variables('vnetId'), '/subnets/', variables('subnetName'))]",
+    "nsgName": "[concat(variables('vnetName'), '-', variables('subnetName'), '-nsg')]",
+    "contributorRole": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', '4d97b98b-1d4f-4787-a291-c67834d212e7')]"
+  },
+  "resources": [
+    {
+      "comments": "## Network Security Group ##",
+      "name": "[variables('nsgName')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "Network Security Group - Container Tier"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "allow-ssh",
+            "properties": {
+              "description": "Allow SSH",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "[parameters('remoteAccessACL')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 1000,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-rdp",
+            "properties": {
+              "description": "Allow RDP",
+              "priority": 1002,
+              "direction": "Inbound",
+              "protocol": "Tcp",
+              "sourceAddressPrefix": "[parameters('remoteAccessACL')]",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "3389",
+              "access": "Allow"
+            }
+          },
+          {
+            "name": "allow-winrm-https",
+            "properties": {
+              "description": "Allow Windows Remote Access from CloudShell",
+              "priority": 1004,
+              "direction": "Inbound",
+              "protocol": "Tcp",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "5986",
+              "access": "Allow"
+            }
+          },
+          {
+            "name": "allow-swarm",
+            "properties": {
+              "description": "Allow Swarm Manager",
+              "priority": 1005,
+              "direction": "Inbound",
+              "protocol": "Tcp",
+              "sourceAddressPrefix": "[parameters('remoteAccessACL')]",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "2376",
+              "access": "Allow"
+            }
+          },
+          {
+            "name": "allow-http",
+            "properties": {
+              "description": "Allow Web",
+              "priority": 1010,
+              "direction": "Inbound",
+              "protocol": "Tcp",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "80",
+              "access": "Allow"
+            }
+          },
+          {
+            "name": "allow-https",
+            "properties": {
+              "description": "Allow Secure Web",
+              "priority": 1020,
+              "direction": "Inbound",
+              "protocol": "Tcp",
+              "sourceAddressPrefix": "*",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "443",
+              "access": "Allow"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "comments": "## Virtual Network ##",
+      "name": "[variables('VNetName')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+      ],
+      "tags": {
+        "displayName": "Virtual Network"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('vnetPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('subnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('subnetPrefix')]",
+              "serviceEndpoints": [
+              ],
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/virtualNetworks/providers/roleAssignments",
+      "apiVersion": "2017-05-01",
+      "name": "[concat(variables('vnetName'), '/Microsoft.Authorization/', guid(concat(resourceGroup().id), variables('contributorRole')))]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
+      ],
+      "properties": {
+        "roleDefinitionId": "[variables('contributorRole')]",
+        "principalId": "[parameters('servicePrincipalObjectId')]",
+        "mode": "Incremental"
+      }
+    }
+  ],
+  "outputs": {
+    "virtualNetwork": {
+      "type": "object",
+      "value": {
+        "id": "[variables('vnetId')]",
+        "name": "[variables('vnetName')]"
+      }
+    },
+    "subnets": {
+      "type": "object",
+      "value": {
+        "subnetName": "[variables('subnetName')]",
+        "subnetId": "[variables('subnetId')]"
+      }
+    }
+  }
+}

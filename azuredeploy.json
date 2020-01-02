@@ -1,0 +1,301 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Small unique string."
+      },
+      "defaultValue": "eastus"
+    },
+    "random": {
+      "type": "int",
+      "metadata": {
+        "description": "3 Digit Random Integer"
+      },
+      "minValue": 100,
+      "maxValue": 999
+    },
+    "templateURL": {
+      "type": "string",
+      "metadata": {
+        "description": "URL Location on where to find the templates"
+      },
+      "defaultValue": "https://raw.githubusercontent.com/danielscholl/iac-elastic-cloud/master/templates/"
+    },
+    "servicePrincipalObjectId": {
+      "type": "string",
+      "metadata": {
+        "description": "ObjectId of Service Principal."
+      }
+    },
+    "vnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Network Address Prefix CIDR"
+      }
+    },
+    "subnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 1 Address Prefix CIDR"
+      }
+    },
+    "allocatorNamePrefix": {
+      "metadata": {
+        "description": "Allocator Virtual Machine Name Prefix."
+      },
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "allocator"
+    },
+    "allocatorServerSize": {
+      "metadata": {
+        "description": "Allocator Virtual Machine Size."
+      },
+      "type": "string",
+      "defaultValue": "Standard_DS2_v2"
+    },
+    "allocatorServerCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of machines to deploy."
+      },
+      "defaultValue": 2,
+      "minValue": 2
+    },
+    "directorNamePrefix": {
+      "metadata": {
+        "description": "Director Virtual Machine Name Prefix."
+      },
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "director"
+    },
+    "directorServerSize": {
+      "metadata": {
+        "description": "Director Virtual Machine Size."
+      },
+      "type": "string",
+      "defaultValue": "Standard_DS2_v2"
+    },
+    "directorServerCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of machines to deploy."
+      },
+      "defaultValue": 2,
+      "minValue": 2
+    },
+    "adminUserName": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin user account name."
+      },
+      "minLength": 5
+    },
+    "adminSshKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Admin user public ssh key."
+      },
+      "minLength": 10
+    }
+  },
+  "variables": {
+    "defaultGroup": "[concat('elastic-cloud-', string(parameters('random')))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2018-05-01",
+      "location": "[parameters('location')]",
+      "name": "[variables('defaultGroup')]",
+      "properties": {
+      }
+    },
+    {
+      "name": "TemplateStorage",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2017-05-10",
+      "resourceGroup": "[variables('defaultGroup')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups/', variables('defaultGroup'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('templateURL'), 'deployStorageAccount.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "prefix": {
+            "value": "[string(parameters('random'))]"
+          },
+          "storageAccountType": {
+            "value": "Standard_LRS"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateVNet",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2017-05-10",
+      "resourceGroup": "[variables('defaultGroup')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups/', variables('defaultGroup'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('templateURL'), 'deployVNet.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "prefix": {
+            "value": "[string(parameters('random'))]"
+          },
+          "vnetPrefix": {
+            "value": "[parameters('vnetPrefix')]"
+          },
+          "subnetPrefix": {
+            "value": "[parameters('subnetPrefix')]"
+          },
+          "servicePrincipalObjectId": {
+            "value": "[parameters('servicePrincipalObjectId')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateLoadBalancer",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2017-05-10",
+      "resourceGroup": "[variables('defaultGroup')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups/', variables('defaultGroup'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('templateURL'), 'deployLoadBalancer.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "prefix": {
+            "value": "[string(parameters('random'))]"
+          },
+          "numberOfInstances": {
+            "value": "[parameters('allocatorServerCount')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateLinuxVMasAllocator",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2017-05-10",
+      "resourceGroup": "[variables('defaultGroup')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups/', variables('defaultGroup'))]",
+        "TemplateStorage",
+        "TemplateVNet",
+        "TemplateLoadBalancer"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('templateURL'), 'deployLinuxVMas.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "prefix": {
+            "value": "[string(parameters('random'))]"
+          },
+          "subnetId": {
+            "value": "[reference('TemplateVNet').outputs.subnets.value.subnetId]"
+          },
+          "loadBalancerId": {
+            "value": "[reference('TemplateLoadBalancer').outputs.loadBalancer.value.id]"
+          },
+          "storageAccount": {
+            "value": "[reference('TemplateStorage').outputs.storageAccount.value.name]"
+          },
+          "storageKey": {
+            "value": "[reference('TemplateStorage').outputs.storageAccount.value.key]"
+          },
+          "vmName": {
+            "value": "[parameters('allocatorNamePrefix')]"
+          },
+          "vmSize": {
+            "value": "[parameters('allocatorServerSize')]"
+          },
+          "numberOfInstances": {
+            "value": "[parameters('allocatorServerCount')]"
+          },
+          "adminUserName": {
+            "value": "[parameters('adminUserName')]"
+          },
+          "sshKeyData": {
+            "value": "[parameters('adminSshKey')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateLinuxVMasDirector",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2017-05-10",
+      "resourceGroup": "[variables('defaultGroup')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups/', variables('defaultGroup'))]",
+        "TemplateStorage",
+        "TemplateVNet",
+        "TemplateLoadBalancer"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('templateURL'), 'deployLinuxVMas.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "prefix": {
+            "value": "[string(parameters('random'))]"
+          },
+          "subnetId": {
+            "value": "[reference('TemplateVNet').outputs.subnets.value.subnetId]"
+          },
+          "loadBalancerId": {
+            "value": "[reference('TemplateLoadBalancer').outputs.loadBalancer.value.id]"
+          },
+          "storageAccount": {
+            "value": "[reference('TemplateStorage').outputs.storageAccount.value.name]"
+          },
+          "storageKey": {
+            "value": "[reference('TemplateStorage').outputs.storageAccount.value.key]"
+          },
+          "vmName": {
+            "value": "[parameters('directorNamePrefix')]"
+          },
+          "vmSize": {
+            "value": "[parameters('directorServerSize')]"
+          },
+          "numberOfInstances": {
+            "value": "[parameters('directorServerCount')]"
+          },
+          "adminUserName": {
+            "value": "[parameters('adminUserName')]"
+          },
+          "sshKeyData": {
+            "value": "[parameters('adminSshKey')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+  }
+}
