@@ -133,13 +133,13 @@
       }
     },
     {
-      "comments": "## Manager SSH NAT Inbound Rules ##",
-      "name": "[concat(variables('LBName'), '/', 'manager-ssh-vm', copyIndex())]",
+      "comments": "## Director SSH NAT Inbound Rules ##",
+      "name": "[concat(variables('LBName'), '/', 'director-ssh-vm', copyIndex())]",
       "type": "Microsoft.Network/loadBalancers/inboundNatRules",
       "apiVersion": "2018-08-01",
       "location": "[resourceGroup().location]",
       "copy": {
-        "name": "lbManagerNatLoop",
+        "name": "lbDirectorNatLoop",
         "count": "[parameters('numberOfInstances')]"
       },
       "dependsOn": [
@@ -156,13 +156,13 @@
       }
     },
     {
-      "comments": "## Worker SSH NAT Inbound Rules ##",
-      "name": "[concat(variables('LBName'), '/', 'worker-ssh-vm', copyIndex())]",
+      "comments": "## Allocator SSH NAT Inbound Rules ##",
+      "name": "[concat(variables('LBName'), '/', 'allocator-ssh-vm', copyIndex())]",
       "type": "Microsoft.Network/loadBalancers/inboundNatRules",
       "apiVersion": "2018-08-01",
       "location": "[resourceGroup().location]",
       "copy": {
-        "name": "lbWorkerNatLoop",
+        "name": "lbAllocatorNatLoop",
         "count": "[parameters('numberOfInstances')]"
       },
       "dependsOn": [
@@ -175,48 +175,6 @@
         "protocol": "tcp",
         "frontendPort": "[copyIndex(6000)]",
         "backendPort": 22,
-        "enableFloatingIP": false
-      }
-    },
-    {
-      "comments": "## Windows RDP NAT Inbound Rules ##",
-      "name": "[concat(variables('LBName'), '/', 'rdp-vm', copyIndex())]",
-      "type": "Microsoft.Network/loadBalancers/inboundNatRules",
-      "apiVersion": "2018-08-01",
-      "location": "[resourceGroup().location]",
-      "copy": {
-        "name": "lbWorkerNatLoop",
-        "count": "[parameters('numberOfInstances')]"
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Network/loadBalancers/', variables('LBName'))]"
-      ],
-      "properties": {
-        "frontendIPConfiguration": {
-          "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
-        },
-        "protocol": "tcp",
-        "frontendPort": "[copyIndex(4000)]",
-        "backendPort": 3389,
-        "enableFloatingIP": false
-      }
-    },
-    {
-      "comments": "## Swarm Manager Inbound NAT ##",
-      "name": "[concat(variables('LBName'), '/', 'swarm-manager')]",
-      "type": "Microsoft.Network/loadBalancers/inboundNatRules",
-      "apiVersion": "2018-08-01",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[concat('Microsoft.Network/loadBalancers/', variables('LBName'))]"
-      ],
-      "properties": {
-        "frontendIPConfiguration": {
-          "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
-        },
-        "protocol": "tcp",
-        "frontendPort": "2376",
-        "backendPort": 2376,
         "enableFloatingIP": false
       }
     }

@@ -136,7 +136,12 @@
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
                 "id": "[parameters('subnetId')]"
-              }
+              },
+              "loadBalancerInboundNatRules": [
+                {
+                  "id": "[concat(parameters('loadbalancerId'), '/inboundNatRules/', parameters('vmName'), '-ssh-vm', copyindex())]"
+                }
+              ]
             }
           }
         ]
