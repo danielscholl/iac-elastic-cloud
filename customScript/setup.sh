@@ -4,9 +4,6 @@
 #	Update package index
 apt-get update
 
-#	Install tools
 apt-get install -y \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    software-properties-common
+  libxss1 \
+  aptitude
