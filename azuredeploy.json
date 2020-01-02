@@ -104,7 +104,7 @@
     }
   },
   "variables": {
-    "defaultGroup": "[concat('elastic-cloud-', string(parameters('random')))]"
+    "defaultGroup": "[concat('iac-elastic-cloud-', string(parameters('random')))]"
   },
   "resources": [
     {

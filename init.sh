@@ -110,23 +110,21 @@ CreateSSHKeys $AZURE_USER
 tput setaf 2; echo 'Deploying ARM Template...' ; tput sgr0
 if [ -f ./params.json ]; then PARAMS="params.json"; else PARAMS="azuredeploy.parameters.json"; fi
 
-echo $UNIQUE
-
-az deployment create --template-file azuredeploy.json  \
-  --location $AZURE_LOCATION \
-  --parameters $PARAMS \
-  --parameters servicePrincipalObjectId=$OBJECT_ID \
-  --parameters random=$UNIQUE \
-  --parameters adminUserName=$LINUX_USER
+# az deployment create --template-file azuredeploy.json  \
+#   --location $AZURE_LOCATION \
+#   --parameters $PARAMS \
+#   --parameters servicePrincipalObjectId=$OBJECT_ID \
+#   --parameters random=$UNIQUE \
+#   --parameters adminUserName=$LINUX_USER
 
 
 ##############################
 ## Create Ansible Inventory ##
 ##############################
 BASE=${PWD##*/}
-RESOURCE_GROUP=${UNIQUE}-${BASE}
-MANAGER_PORT=5000
-WORKER_PORT=6000
+RESOURCE_GROUP=${BASE}-${UNIQUE}
+ALLOCATOR_PORT=5000
+DIRECTOR_PORT=6000
 INVENTORY="./ansible/inventories/azure/"
 GLOBAL_VARS="./ansible/inventories/azure/group_vars"
 mkdir -p ${INVENTORY};
@@ -147,19 +145,19 @@ LB_IP=$(az network public-ip show \
 # Ansible Inventory
 tput setaf 2; echo 'Creating the ansible inventory files...' ; tput sgr0
 cat > ${INVENTORY}/hosts << EOF
-$(for (( c=0; c<$MANAGERS; c++ )); do echo "manager-vm$c ansible_host=$LB_IP ansible_port=$(($MANAGER_PORT + $c)) ansible_user=$LINUX_USER"; done)
-$(for (( c=0; c<$WORKERS; c++ )); do echo "worker-vm$c ansible_host=$LB_IP ansible_port=$(($WORKER_PORT + $c)) ansible_user=$LINUX_USER"; done)
+$(for (( c=0; c<$ALLOCATORS; c++ )); do echo "allocator-vm$c ansible_host=$LB_IP ansible_port=$(($ALLOCATOR_PORT + $c)) ansible_user=$LINUX_USER"; done)
+$(for (( c=0; c<$DIRECTORS; c++ )); do echo "director-vm$c ansible_host=$LB_IP ansible_port=$(($DIRECTOR_PORT + $c)) ansible_user=$LINUX_USER"; done)
 
-[manager]
-$(for (( c=0; c<$MANAGERS; c++ )); do echo "manager-vm$c"; done)
+[allocator]
+$(for (( c=0; c<$ALLOCATORS; c++ )); do echo "allocator-vm$c"; done)
 
-[worker]
-$(for (( c=0; c<$WORKERS; c++ )); do echo "worker-vm$c"; done)
+[director_coordinator]
+$(for (( c=0; c<$DIRECTORS; c++ )); do echo "director-vm$c"; done)
 EOF
 # cat > ${INVENTORY}/hosts << EOF
 # $(for (( c=0; c<$COUNT; c++ )); do echo "vm$c ansible_host=$LB_IP ansible_port=$(($BASE_PORT + $c))"; done)
 
-# [manager]
+# [allocator]
 
-# [worker]
+# [director]
 # EOF

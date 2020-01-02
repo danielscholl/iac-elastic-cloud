@@ -43,6 +43,17 @@
       },
       "defaultValue": "Standard_DS1_v2"
     },
+    "vmStorageType": {
+      "type": "string",
+      "metadata": {
+        "description": "Type of Storage for Managed Disks"
+      },
+      "allowedValues": [
+        "Standard_LRS",
+        "Premium_LRS"
+      ],
+      "defaultValue": "Standard_LRS"
+    },
     "adminUserName": {
       "type": "string",
       "metadata": {
@@ -73,12 +84,7 @@
   },
   "variables": {
     "AvailabilitySetName": "[concat(parameters('vmName'), '-as')]",
-    "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]",
-    "cleanResourceGroup": "[toLower(replace(resourceGroup().name,'-', ''))]",
-    "trimmedName": "[substring(variables('cleanResourceGroup'),0, 5)]",
-    "storageAccountName": "[concat(variables('trimmedName'), uniqueString(resourceGroup().id))]",
-    "storageId": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]",
-    "vmStorageAccountContainerName": "vhds"
+    "sshKeyPath": "[concat('/home/',parameters('adminUserName'),'/.ssh/authorized_keys')]"
   },
   "resources": [
     {
@@ -91,31 +97,6 @@
         "platformUpdateDomainCount": 5,
         "platformFaultDomainCount": 2,
         "managed": true
-      }
-    },
-    {
-      "comments": "## Storage Account ##",
-      "name": "[variables('storageAccountName')]",
-      "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2016-01-01",
-      "location": "[resourceGroup().location]",
-      "tags": {
-        "displayName": "Storage Account"
-      },
-      "kind": "Storage",
-      "sku": {
-        "name": "Standard_LRS",
-        "tier": "Standard"
-      },
-      "properties": {
-        "encryption": {
-          "keySource": "Microsoft.Storage",
-          "services": {
-            "blob": {
-              "enabled": true
-            }
-          }
-        }
       }
     },
     {
@@ -184,12 +165,10 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "osdisk",
-            "vhd": {
-              "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName')), '2015-06-15').primaryEndpoints.blob, variables('vmStorageAccountContainerName'),'/',concat('vm', copyIndex(), '-osdisk'),'.vhd')]"
-            },
-            "caching": "ReadWrite",
-            "createOption": "FromImage"
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "[parameters('vmStorageType')]"
+            }
           }
         },
         "networkProfile": {
