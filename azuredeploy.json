@@ -50,21 +50,6 @@
       "minLength": 1,
       "defaultValue": "allocator"
     },
-    "allocatorServerSize": {
-      "metadata": {
-        "description": "Allocator Virtual Machine Size."
-      },
-      "type": "string",
-      "defaultValue": "Standard_DS2_v2"
-    },
-    "allocatorServerCount": {
-      "type": "int",
-      "metadata": {
-        "description": "Number of machines to deploy."
-      },
-      "defaultValue": 2,
-      "minValue": 2
-    },
     "directorNamePrefix": {
       "metadata": {
         "description": "Director Virtual Machine Name Prefix."
@@ -81,6 +66,21 @@
       "defaultValue": "Standard_DS2_v2"
     },
     "directorServerCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of machines to deploy."
+      },
+      "defaultValue": 2,
+      "minValue": 2
+    },
+    "allocatorServerSize": {
+      "metadata": {
+        "description": "Allocator Virtual Machine Size."
+      },
+      "type": "string",
+      "defaultValue": "Standard_DS2_v2"
+    },
+    "allocatorServerCount": {
       "type": "int",
       "metadata": {
         "description": "Number of machines to deploy."
