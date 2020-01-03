@@ -21,7 +21,7 @@ if [ -z ${AZURE_LOCATION} ]; then
 fi
 if [ ! -z $1 ]; then CATEGORY=$1; fi
 if [ -z $CATEGORY ]; then
-  CATEGORY="director"
+  CATEGORY="primary"
 fi
 if [ ! -z $2 ]; then INSTANCE=$2; fi
 if [ -z $INSTANCE ]; then
@@ -43,7 +43,10 @@ if [ -f .ssh/id_rsa ]; then
   SSH_KEY=".ssh/id_rsa"
 fi
 
-PORT=$((5000 + $INSTANCE))
+PORT=$((4000 + $INSTANCE))
+if [ $CATEGORY == "director" ]; then
+  PORT=$((5000 + $INSTANCE))
+fi
 if [ $CATEGORY == "allocator" ]; then
   PORT=$((6000 + $INSTANCE))
 fi
