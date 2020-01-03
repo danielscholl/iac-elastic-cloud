@@ -2,9 +2,19 @@
 
 This is an Azure environment created using ARM templates to test Elastic Cloud Enterprise
 
+__PreRequisites__
+
+Requires the use of [direnv](https://direnv.net/).
+Requires the use of [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest).
+Requires the use of [Docker](https://www.docker.com/get-started).
+
+### Environment Settings
+
+Environment Settings are stored in the .envrc file.  When installing the swarm this file will be automatically created that then keeps locally the Service Principal information.
+
 __Requirements:__
 
-- Cloud Shell
+- Cloud Shell (Not Fully Tested yet)
 
 ## Installation
 ### Clone the repo

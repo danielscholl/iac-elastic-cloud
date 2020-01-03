@@ -18,6 +18,7 @@ if [ -z $AZURE_LOCATION ]; then
   AZURE_LOCATION="eastus"
 fi
 if [ -z $UNIQUE ]; then
+  # //TODO: Detect OS if Mac use jot otherwise use shuf
   # UNIQUE=$(shuf -i 100-999 -n 1)
   UNIQUE=$(jot -r 1  100 999)
 fi
