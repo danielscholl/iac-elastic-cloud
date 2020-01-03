@@ -97,6 +97,29 @@
       }
     },
     {
+      "comments": "## SNAT Outbound Rules ##",
+      "name": "[concat(variables('LBName'), '/', 'outboundSNAT')]",
+      "type": "Microsoft.Network/loadBalancers/outboundRules",
+      "apiVersion": "2019-09-01",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/loadBalancers/', variables('LBName'))]"
+      ],
+      "properties": {
+        "allocatedOutboundPorts": "integer",
+        "frontendIPConfigurations": [
+          {
+            "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
+          }
+        ],
+        "backendAddressPool": {
+          "id": "[concat(variables('LBId'), '/backendAddressPools/lbBackEnd')]"
+        },
+        "protocol": "All",
+        "enableTcpReset": "true"
+      }
+    },
+    {
       "comments": "## Primary SSH NAT Inbound Rules ##",
       "name": "[concat(variables('LBName'), '/', 'primary-ssh-vm', copyIndex())]",
       "type": "Microsoft.Network/loadBalancers/inboundNatRules",
