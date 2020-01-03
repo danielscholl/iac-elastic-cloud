@@ -82,12 +82,14 @@
               "protocol": "All",
               "enableTcpReset": true,
               "idleTimeoutInMinutes": 4,
-              "frontendIPConfiguration": {
-                "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
-              },
               "backendAddressPool": {
                 "id": "[concat(variables('LBId'), '/backendAddressPools/lbBackEnd')]"
-              }
+              },
+              "frontendIPConfigurations": [
+                {
+                  "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
+                }
+              ]
             }
           }
         ],
@@ -111,30 +113,6 @@
             }
           }
         ]
-      }
-    },
-    {
-      "comments": "## SNAT Outbound Rules ##",
-      "name": "[concat(variables('LBName'), '/', 'outboundSNAT')]",
-      "type": "Microsoft.Network/loadBalancers/outboundRules",
-      "apiVersion": "2019-09-01",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[concat('Microsoft.Network/loadBalancers/', variables('LBName'))]"
-      ],
-      "properties": {
-        "allocatedOutboundPorts": 0,
-        "protocol": "All",
-        "enableTcpReset": "true",
-        "idleTimeoutInMinutes": 4,
-        "frontendIPConfigurations": [
-          {
-            "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
-          }
-        ],
-        "backendAddressPool": {
-          "id": "[concat(variables('LBId'), '/backendAddressPools/lbBackEnd')]"
-        }
       }
     },
     {
