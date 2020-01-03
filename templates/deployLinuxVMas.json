@@ -77,7 +77,7 @@
       "metadata": {
         "description": "The Ubuntu version for the VM. This will pick a fully patched image of this given Ubuntu version."
       },
-      "defaultValue": "18.04-LTS",
+      "defaultValue": "16.04.0-LTS",
       "allowedValues": [
         "14.04.5-LTS",
         "16.04.0-LTS",

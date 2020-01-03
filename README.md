@@ -31,6 +31,8 @@ The first step is to deploy the custom ARM Templates using the install.sh script
 Once the template is deployed properly a few Azure CLI commands are run to create the items not supported by ARM Templates.
 
 
+#### Ansible Configuration File
+Manually add the servers into the Load Balancer BackendPool
 
 #### Ansible Configuration File
 

@@ -5,4 +5,24 @@
     ansible_python_interpreter: "/usr/bin/python3"
   roles:
     - patchOS
-    # - reboot-server
+    - reboot-server
+
+
+- hosts: primary
+  gather_facts: true
+  roles:
+    - elastic-cloud-enterprise
+  vars:
+    ece_primary: true
+
+- hosts: director_coordinator
+  roles:
+    - elastic-cloud-enterprise
+  vars:
+    ece_roles: [director, coordinator, proxy]
+
+- hosts: allocator
+  roles:
+    - elastic-cloud-enterprise
+  vars:
+    ece_roles: [allocator]
