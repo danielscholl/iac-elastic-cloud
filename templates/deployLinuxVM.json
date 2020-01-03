@@ -58,6 +58,17 @@
       },
       "defaultValue": "Standard_B2s"
     },
+    "vmStorageType": {
+      "type": "string",
+      "metadata": {
+        "description": "Type of Storage for Managed Disks"
+      },
+      "allowedValues": [
+        "Standard_LRS",
+        "Premium_LRS"
+      ],
+      "defaultValue": "Standard_LRS"
+    },
     "adminUserName": {
       "type": "string",
       "metadata": {
@@ -168,7 +179,18 @@
           },
           "osDisk": {
             "createOption": "FromImage"
-          }
+          },
+          "dataDisks": [
+            {
+              "name": "[concat(parameters('vmName'), '-d1')]",
+              "diskSizeGB": 32,
+              "lun": 0,
+              "createOption": "Empty",
+              "managedDisk": {
+                "storageAccountType": "[parameters('vmStorageType')]"
+              }
+            }
+          ]
         },
         "networkProfile": {
           "networkInterfaces": [
