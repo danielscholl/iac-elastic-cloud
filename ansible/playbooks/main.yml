@@ -9,6 +9,7 @@
 
 
 - hosts: primary
+  become: yes
   gather_facts: true
   roles:
     - elastic-cloud-enterprise
@@ -16,12 +17,14 @@
     ece_primary: true
 
 - hosts: director_coordinator
+  become: yes
   roles:
     - elastic-cloud-enterprise
   vars:
     ece_roles: [director, coordinator, proxy]
 
 - hosts: allocator
+  become: yes
   roles:
     - elastic-cloud-enterprise
   vars:
