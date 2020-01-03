@@ -33,7 +33,7 @@ The first step is to deploy the custom ARM Templates using the install.sh script
 - director count (The number of Director_Cordinator Nodes desired to be created  ie: 2)
 
 ```bash
-./install.sh 2 2
+./init.sh 2 2
 ```
 
 ### Configure the IaaS servers using Ansible Playbooks
@@ -41,8 +41,8 @@ The first step is to deploy the custom ARM Templates using the install.sh script
 Once the template is deployed properly a few Azure CLI commands are run to create the items not supported by ARM Templates.
 
 
-#### Ansible Configuration File
-Manually add the servers into the Load Balancer BackendPool
+#### Load Balancer setup
+Script at this time requires after deployment that the servers be manually added into the Load Balancer BackendPool
 
 #### Ansible Configuration File
 
