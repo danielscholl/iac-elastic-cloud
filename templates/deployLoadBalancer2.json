@@ -106,7 +106,10 @@
         "[concat('Microsoft.Network/loadBalancers/', variables('LBName'))]"
       ],
       "properties": {
-        "allocatedOutboundPorts": "integer",
+        "allocatedOutboundPorts": 0,
+        "protocol": "All",
+        "enableTcpReset": "true",
+        "idleTimeoutInMinutes": 4,
         "frontendIPConfigurations": [
           {
             "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
@@ -114,9 +117,7 @@
         ],
         "backendAddressPool": {
           "id": "[concat(variables('LBId'), '/backendAddressPools/lbBackEnd')]"
-        },
-        "protocol": "All",
-        "enableTcpReset": "true"
+        }
       }
     },
     {
