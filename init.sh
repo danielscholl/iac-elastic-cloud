@@ -123,6 +123,7 @@ az deployment create --template-file azuredeploy.json  \
 ##############################
 BASE=${PWD##*/}
 RESOURCE_GROUP=${BASE}-${UNIQUE}
+PRIMARY_PORT=4000
 DIRECTOR_PORT=5000
 ALLOCATOR_PORT=6000
 INVENTORY="./ansible/inventories/azure/"

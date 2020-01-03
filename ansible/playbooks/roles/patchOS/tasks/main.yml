@@ -1,23 +1,30 @@
 ---
-- name: Ensure Package Aptitude is installed
+
+- name: Run the equivalent of "apt-get update" as a separate step
   apt:
-    state: latest
     update_cache: yes
-    cache_valid_time: 3600
-    pkg: aptitude
 
-- name: Apply Latest OS Patches
-  apt:
-    state: latest
-    upgrade: yes
+# - name: Ensure Package Aptitude is installed
+#   apt:
+#     state: latest
+#     # update_cache: yes
+#     # cache_valid_time: 3600
+#     pkg: aptitude
 
-- name: Ensure Common System Packages are installed
-  apt:
-    state: latest
-    pkg: ['apt-transport-https', 'ca-certificates', 'software-properties-common', 'curl']
+# - name: Apply Latest OS Patches
+#   apt:
+#     state: latest
+#     upgrade: yes
 
-# Set vm.max_map_count to 262144 in /etc/sysctl.conf ** REQUIRED BY Elastic Search
-- sysctl:
-    name: vm.max_map_count
-    value: 262144
-    state: present
+
+
+# - name: Ensure Common System Packages are installed
+#   apt:
+#     state: latest
+#     pkg: ['apt-transport-https', 'ca-certificates', 'software-properties-common', 'curl']
+
+# # Set vm.max_map_count to 262144 in /etc/sysctl.conf ** REQUIRED BY Elastic Search
+# - sysctl:
+#     name: vm.max_map_count
+#     value: 262144
+#     state: present

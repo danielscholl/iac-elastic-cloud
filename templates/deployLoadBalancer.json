@@ -133,6 +133,29 @@
       }
     },
     {
+      "comments": "## Primary SSH NAT Inbound Rules ##",
+      "name": "[concat(variables('LBName'), '/', 'primary-ssh-vm', copyIndex())]",
+      "type": "Microsoft.Network/loadBalancers/inboundNatRules",
+      "apiVersion": "2018-08-01",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "lbDirectorNatLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/loadBalancers/', variables('LBName'))]"
+      ],
+      "properties": {
+        "frontendIPConfiguration": {
+          "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
+        },
+        "protocol": "tcp",
+        "frontendPort": "[copyIndex(4000)]",
+        "backendPort": 22,
+        "enableFloatingIP": false
+      }
+    },
+    {
       "comments": "## Director SSH NAT Inbound Rules ##",
       "name": "[concat(variables('LBName'), '/', 'director-ssh-vm', copyIndex())]",
       "type": "Microsoft.Network/loadBalancers/inboundNatRules",

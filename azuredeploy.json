@@ -42,13 +42,28 @@
         "description": "Subnet 1 Address Prefix CIDR"
       }
     },
-    "allocatorNamePrefix": {
+    "primaryNamePrefix": {
       "metadata": {
-        "description": "Allocator Virtual Machine Name Prefix."
+        "description": "Primary Virtual Machine Name Prefix."
       },
       "type": "string",
       "minLength": 1,
-      "defaultValue": "allocator"
+      "defaultValue": "primary"
+    },
+    "primaryServerSize": {
+      "metadata": {
+        "description": "Primary Virtual Machine Size."
+      },
+      "type": "string",
+      "defaultValue": "Standard_DS2_v2"
+    },
+    "primaryServerCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of machines to deploy."
+      },
+      "defaultValue": 1,
+      "minValue": 1
     },
     "directorNamePrefix": {
       "metadata": {
@@ -72,6 +87,14 @@
       },
       "defaultValue": 2,
       "minValue": 2
+    },
+    "allocatorNamePrefix": {
+      "metadata": {
+        "description": "Allocator Virtual Machine Name Prefix."
+      },
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "allocator"
     },
     "allocatorServerSize": {
       "metadata": {
@@ -189,6 +212,57 @@
           },
           "numberOfInstances": {
             "value": "[parameters('allocatorServerCount')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateLinuxVMPrimary",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2017-05-10",
+      "resourceGroup": "[variables('defaultGroup')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups/', variables('defaultGroup'))]",
+        "TemplateStorage",
+        "TemplateVNet",
+        "TemplateLoadBalancer"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat(parameters('templateURL'), 'deployLinuxVM.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "prefix": {
+            "value": "[string(parameters('random'))]"
+          },
+          "subnetId": {
+            "value": "[reference('TemplateVNet').outputs.subnets.value.subnetId]"
+          },
+          "loadBalancerId": {
+            "value": "[reference('TemplateLoadBalancer').outputs.loadBalancer.value.id]"
+          },
+          "storageAccount": {
+            "value": "[reference('TemplateStorage').outputs.storageAccount.value.name]"
+          },
+          "storageKey": {
+            "value": "[reference('TemplateStorage').outputs.storageAccount.value.key]"
+          },
+          "vmName": {
+            "value": "[parameters('primaryNamePrefix')]"
+          },
+          "vmSize": {
+            "value": "[parameters('primaryServerSize')]"
+          },
+          "numberOfInstances": {
+            "value": "[parameters('primaryServerCount')]"
+          },
+          "adminUserName": {
+            "value": "[parameters('adminUserName')]"
+          },
+          "sshKeyData": {
+            "value": "[parameters('adminSshKey')]"
           }
         }
       }
