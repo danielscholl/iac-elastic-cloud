@@ -13,6 +13,7 @@
   apt:
     name: "{{ docker_version_map[docker_version]['package'] }}"
     update_cache: yes
+    force: true
     state: present
 
 - name: Pin docker-engine packet

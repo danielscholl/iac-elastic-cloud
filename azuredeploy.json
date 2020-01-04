@@ -55,7 +55,7 @@
         "description": "Primary Virtual Machine Size."
       },
       "type": "string",
-      "defaultValue": "Standard_DS2_v2"
+      "defaultValue": "Standard_E4s_v3"
     },
     "primaryServerCount": {
       "type": "int",
@@ -78,7 +78,7 @@
         "description": "Director Virtual Machine Size."
       },
       "type": "string",
-      "defaultValue": "Standard_DS2_v2"
+      "defaultValue": "Standard_E4s_v3"
     },
     "directorServerCount": {
       "type": "int",
@@ -101,7 +101,7 @@
         "description": "Allocator Virtual Machine Size."
       },
       "type": "string",
-      "defaultValue": "Standard_DS2_v2"
+      "defaultValue": "Standard_E4s_v3"
     },
     "allocatorServerCount": {
       "type": "int",
