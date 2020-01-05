@@ -42,6 +42,13 @@
         "description": "Subnet 1 Address Prefix CIDR"
       }
     },
+    "remoteAccessACL": {
+      "type": "string",
+      "metadata": {
+        "description": "Remote Access CIDR"
+      },
+      "defaultValue": "Internet"
+    },
     "primaryNamePrefix": {
       "metadata": {
         "description": "Primary Virtual Machine Name Prefix."
@@ -188,6 +195,9 @@
           },
           "servicePrincipalObjectId": {
             "value": "[parameters('servicePrincipalObjectId')]"
+          },
+          "remoteAccessACL": {
+            "value": "[parameters('remoteAccessACL')]"
           }
         }
       }
@@ -210,7 +220,13 @@
           "prefix": {
             "value": "[string(parameters('random'))]"
           },
-          "numberOfInstances": {
+          "primaryCount": {
+            "value": "[parameters('primaryServerCount')]"
+          },
+          "directorCount": {
+            "value": "[parameters('directorServerCount')]"
+          },
+          "allocatorCount": {
             "value": "[parameters('allocatorServerCount')]"
           }
         }

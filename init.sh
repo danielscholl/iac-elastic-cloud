@@ -115,12 +115,12 @@ CreateSSHKeys $AZURE_USER
 tput setaf 2; echo 'Deploying ARM Template...' ; tput sgr0
 if [ -f ./params.json ]; then PARAMS="params.json"; else PARAMS="azuredeploy.parameters.json"; fi
 
-# az deployment create --template-file azuredeploy.json  \
-#   --location $AZURE_LOCATION \
-#   --parameters $PARAMS \
-#   --parameters servicePrincipalObjectId=$OBJECT_ID \
-#   --parameters random=$UNIQUE \
-#   --parameters adminUserName=$LINUX_USER
+az deployment create --template-file azuredeploy.json  \
+  --location $AZURE_LOCATION \
+  --parameters $PARAMS \
+  --parameters servicePrincipalObjectId=$OBJECT_ID \
+  --parameters random=$UNIQUE \
+  --parameters adminUserName=$LINUX_USER
 
 
 ##############################

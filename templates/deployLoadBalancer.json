@@ -8,7 +8,21 @@
         "description": "Small unique string."
       }
     },
-    "numberOfInstances": {
+    "primaryCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of VMs to deploy, limit 5 since this sample is using a single storage account"
+      },
+      "defaultValue": 1
+    },
+    "directorCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of VMs to deploy, limit 5 since this sample is using a single storage account"
+      },
+      "defaultValue": 2
+    },
+    "allocatorCount": {
       "type": "int",
       "metadata": {
         "description": "Number of VMs to deploy, limit 5 since this sample is using a single storage account"
@@ -104,38 +118,15 @@
             }
           },
           {
-            "name": "probe-https",
+            "name": "probe-admin-ui",
             "properties": {
               "protocol": "Tcp",
-              "port": 443,
+              "port": 12400,
               "intervalInSeconds": 15,
               "numberOfProbes": 2
             }
           }
         ]
-      }
-    },
-    {
-      "comments": "## Primary SSH NAT Inbound Rules ##",
-      "name": "[concat(variables('LBName'), '/', 'primary-ssh-vm', copyIndex())]",
-      "type": "Microsoft.Network/loadBalancers/inboundNatRules",
-      "apiVersion": "2019-09-01",
-      "location": "[resourceGroup().location]",
-      "copy": {
-        "name": "lbDirectorNatLoop",
-        "count": "[parameters('numberOfInstances')]"
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Network/loadBalancers/', variables('LBName'))]"
-      ],
-      "properties": {
-        "frontendIPConfiguration": {
-          "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
-        },
-        "protocol": "tcp",
-        "frontendPort": "[copyIndex(4000)]",
-        "backendPort": 22,
-        "enableFloatingIP": false
       }
     },
     {
@@ -145,8 +136,8 @@
       "apiVersion": "2019-09-01",
       "location": "[resourceGroup().location]",
       "copy": {
-        "name": "lbDirectorNatLoop",
-        "count": "[parameters('numberOfInstances')]"
+        "name": "lbPrimaryUiLoop",
+        "count": "[parameters('primaryCount')]"
       },
       "dependsOn": [
         "[concat('Microsoft.Network/loadBalancers/', variables('LBName'))]"
@@ -162,6 +153,29 @@
       }
     },
     {
+      "comments": "## Primary SSH NAT Inbound Rules ##",
+      "name": "[concat(variables('LBName'), '/', 'primary-ssh-vm', copyIndex())]",
+      "type": "Microsoft.Network/loadBalancers/inboundNatRules",
+      "apiVersion": "2019-09-01",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "lbDirectorNatLoop",
+        "count": "[parameters('primaryCount')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/loadBalancers/', variables('LBName'))]"
+      ],
+      "properties": {
+        "frontendIPConfiguration": {
+          "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
+        },
+        "protocol": "tcp",
+        "frontendPort": "[copyIndex(4000)]",
+        "backendPort": 22,
+        "enableFloatingIP": false
+      }
+    },
+    {
       "comments": "## Director SSH NAT Inbound Rules ##",
       "name": "[concat(variables('LBName'), '/', 'director-ssh-vm', copyIndex())]",
       "type": "Microsoft.Network/loadBalancers/inboundNatRules",
@@ -169,7 +183,7 @@
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "lbDirectorNatLoop",
-        "count": "[parameters('numberOfInstances')]"
+        "count": "[parameters('directorCount')]"
       },
       "dependsOn": [
         "[concat('Microsoft.Network/loadBalancers/', variables('LBName'))]"
@@ -192,7 +206,7 @@
       "location": "[resourceGroup().location]",
       "copy": {
         "name": "lbAllocatorNatLoop",
-        "count": "[parameters('numberOfInstances')]"
+        "count": "[parameters('allocatorCount')]"
       },
       "dependsOn": [
         "[concat('Microsoft.Network/loadBalancers/', variables('LBName'))]"
