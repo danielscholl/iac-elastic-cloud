@@ -71,44 +71,16 @@
             }
           },
           {
-            "name": "allow-rdp",
+            "name": "allow-admin",
             "properties": {
-              "description": "Allow RDP",
-              "priority": 1002,
-              "direction": "Inbound",
-              "protocol": "Tcp",
-              "sourceAddressPrefix": "[parameters('remoteAccessACL')]",
-              "sourcePortRange": "*",
-              "destinationAddressPrefix": "*",
-              "destinationPortRange": "3389",
-              "access": "Allow"
-            }
-          },
-          {
-            "name": "allow-winrm-https",
-            "properties": {
-              "description": "Allow Windows Remote Access from CloudShell",
-              "priority": 1004,
-              "direction": "Inbound",
-              "protocol": "Tcp",
-              "sourceAddressPrefix": "*",
-              "sourcePortRange": "*",
-              "destinationAddressPrefix": "*",
-              "destinationPortRange": "5986",
-              "access": "Allow"
-            }
-          },
-          {
-            "name": "allow-swarm",
-            "properties": {
-              "description": "Allow Swarm Manager",
+              "description": "Allow Admin UI",
               "priority": 1005,
               "direction": "Inbound",
               "protocol": "Tcp",
               "sourceAddressPrefix": "[parameters('remoteAccessACL')]",
               "sourcePortRange": "*",
               "destinationAddressPrefix": "*",
-              "destinationPortRange": "2376",
+              "destinationPortRange": "12400",
               "access": "Allow"
             }
           },

@@ -139,6 +139,29 @@
       }
     },
     {
+      "comments": "## Primary Admin UI Inbound Rule ##",
+      "name": "[concat(variables('LBName'), '/', 'primary-admin-ui', copyIndex())]",
+      "type": "Microsoft.Network/loadBalancers/inboundNatRules",
+      "apiVersion": "2019-09-01",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "lbDirectorNatLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/loadBalancers/', variables('LBName'))]"
+      ],
+      "properties": {
+        "frontendIPConfiguration": {
+          "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
+        },
+        "protocol": "tcp",
+        "frontendPort": "[copyIndex(3000)]",
+        "backendPort": 12400,
+        "enableFloatingIP": false
+      }
+    },
+    {
       "comments": "## Director SSH NAT Inbound Rules ##",
       "name": "[concat(variables('LBName'), '/', 'director-ssh-vm', copyIndex())]",
       "type": "Microsoft.Network/loadBalancers/inboundNatRules",
