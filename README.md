@@ -66,6 +66,8 @@ Check and validate ansible connectivity once provisioning has been completed and
 ```bash
 ansible all -m ping  #Check Connectivity
 ansible-playbook ansible/playbooks/main.yml  # Provision the  Servers
+
+# Note: If the ansible playbook install fails, execute it again.
 ```
 
 

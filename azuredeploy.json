@@ -108,7 +108,7 @@
       "metadata": {
         "description": "Number of machines to deploy."
       },
-      "defaultValue": 2,
+      "defaultValue": 3,
       "minValue": 2
     },
     "adminUserName": {

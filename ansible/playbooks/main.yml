@@ -7,7 +7,6 @@
     - patchOS
     - reboot-server
 
-
 - hosts: primary
   become: yes
   gather_facts: true

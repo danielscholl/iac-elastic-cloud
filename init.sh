@@ -24,7 +24,7 @@ if [ -z $UNIQUE ]; then
 fi
 if [ ! -z $1 ]; then ALLOCATORS=$1; fi
 if [ -z $ALLOCATORS ]; then
-  ALLOCATORS=2
+  ALLOCATORS=3
 fi
 if [ ! -z $2 ]; then DIRECTORS=$2; fi
 if [ -z $DIRECTORS ]; then
@@ -115,12 +115,12 @@ CreateSSHKeys $AZURE_USER
 tput setaf 2; echo 'Deploying ARM Template...' ; tput sgr0
 if [ -f ./params.json ]; then PARAMS="params.json"; else PARAMS="azuredeploy.parameters.json"; fi
 
-az deployment create --template-file azuredeploy.json  \
-  --location $AZURE_LOCATION \
-  --parameters $PARAMS \
-  --parameters servicePrincipalObjectId=$OBJECT_ID \
-  --parameters random=$UNIQUE \
-  --parameters adminUserName=$LINUX_USER
+# az deployment create --template-file azuredeploy.json  \
+#   --location $AZURE_LOCATION \
+#   --parameters $PARAMS \
+#   --parameters servicePrincipalObjectId=$OBJECT_ID \
+#   --parameters random=$UNIQUE \
+#   --parameters adminUserName=$LINUX_USER
 
 
 ##############################
@@ -151,9 +151,9 @@ LB_IP=$(az network public-ip show \
 # Ansible Inventory
 tput setaf 2; echo 'Creating the ansible inventory files...' ; tput sgr0
 cat > ${INVENTORY}/hosts << EOF
-$(for (( c=0; c<$PRIMARIES; c++ )); do echo "primary-vm$c ansible_host=$LB_IP ansible_port=$(($PRIMARY_PORT + $c)) ansible_user=$LINUX_USER"; done)
-$(for (( c=0; c<$DIRECTORS; c++ )); do echo "director-vm$c ansible_host=$LB_IP ansible_port=$(($DIRECTOR_PORT + $c)) ansible_user=$LINUX_USER"; done)
-$(for (( c=0; c<$ALLOCATORS; c++ )); do echo "allocator-vm$c ansible_host=$LB_IP ansible_port=$(($ALLOCATOR_PORT + $c)) ansible_user=$LINUX_USER"; done)
+$(for (( c=0; c<$PRIMARIES; c++ )); do echo "primary-vm$c ansible_host=$LB_IP ansible_port=$(($PRIMARY_PORT + $c)) ansible_user=$LINUX_USER availability_zone=zone-$c"; done)
+$(for (( c=0; c<$DIRECTORS; c++ )); do echo "director-vm$c ansible_host=$LB_IP ansible_port=$(($DIRECTOR_PORT + $c)) ansible_user=$LINUX_USER availability_zone=zone-$((1 + $c))"; done)
+$(for (( c=0; c<$ALLOCATORS; c++ )); do echo "allocator-vm$c ansible_host=$LB_IP ansible_port=$(($ALLOCATOR_PORT + $c)) ansible_user=$LINUX_USER availability_zone=zone-$c"; done)
 
 [primary]
 $(for (( c=0; c<$PRIMARIES; c++ )); do echo "primary-vm$c"; done)
