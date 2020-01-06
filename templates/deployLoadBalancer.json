@@ -149,7 +149,7 @@
     },
     {
       "comments": "## Primary Admin UI http Inbound Rule ##",
-      "name": "[concat(variables('LBName'), '/', 'primary-admin-ui-http', copyIndex())]",
+      "name": "[concat(variables('LBName'), '/', 'primary-admin-http-ui', copyIndex())]",
       "type": "Microsoft.Network/loadBalancers/inboundNatRules",
       "apiVersion": "2019-09-01",
       "location": "[resourceGroup().location]",
@@ -172,7 +172,7 @@
     },
     {
       "comments": "## Primary Admin UI https Inbound Rule ##",
-      "name": "[concat(variables('LBName'), '/', 'primary-admin-ui-https', copyIndex())]",
+      "name": "[concat(variables('LBName'), '/', 'primary-admin-https-ui', copyIndex())]",
       "type": "Microsoft.Network/loadBalancers/inboundNatRules",
       "apiVersion": "2019-09-01",
       "location": "[resourceGroup().location]",

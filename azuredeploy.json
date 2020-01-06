@@ -24,12 +24,6 @@
       },
       "defaultValue": "https://raw.githubusercontent.com/danielscholl/iac-elastic-cloud/master/templates/"
     },
-    "servicePrincipalObjectId": {
-      "type": "string",
-      "metadata": {
-        "description": "ObjectId of Service Principal."
-      }
-    },
     "vnetPrefix": {
       "type": "string",
       "metadata": {
@@ -192,9 +186,6 @@
           },
           "subnetPrefix": {
             "value": "[parameters('subnetPrefix')]"
-          },
-          "servicePrincipalObjectId": {
-            "value": "[parameters('servicePrincipalObjectId')]"
           },
           "remoteAccessACL": {
             "value": "[parameters('remoteAccessACL')]"

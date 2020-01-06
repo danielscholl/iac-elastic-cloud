@@ -22,12 +22,6 @@
         "description": "Subnet 1 Address Prefix CIDR"
       }
     },
-    "servicePrincipalObjectId": {
-      "metadata": {
-        "description": "Object ID of Service Principal"
-      },
-      "type": "securestring"
-    },
     "remoteAccessACL": {
       "type": "string",
       "metadata": {
@@ -160,19 +154,6 @@
             }
           }
         ]
-      }
-    },
-    {
-      "type": "Microsoft.Network/virtualNetworks/providers/roleAssignments",
-      "apiVersion": "2017-05-01",
-      "name": "[concat(variables('vnetName'), '/Microsoft.Authorization/', guid(concat(resourceGroup().id), variables('contributorRole')))]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
-      ],
-      "properties": {
-        "roleDefinitionId": "[variables('contributorRole')]",
-        "principalId": "[parameters('servicePrincipalObjectId')]",
-        "mode": "Incremental"
       }
     }
   ],
