@@ -85,7 +85,7 @@
               "priority": 1006,
               "direction": "Inbound",
               "protocol": "Tcp",
-              "sourceAddressPrefix": "[parameters('remoteAccessACL')]",
+              "sourceAddressPrefix": "*",
               "sourcePortRange": "*",
               "destinationAddressPrefix": "*",
               "destinationPortRange": "12443",
