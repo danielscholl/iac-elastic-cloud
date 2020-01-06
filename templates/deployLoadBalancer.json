@@ -118,10 +118,28 @@
             }
           },
           {
-            "name": "probe-admin-ui",
+            "name": "probe-https",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 443,
+              "intervalInSeconds": 15,
+              "numberOfProbes": 2
+            }
+          },
+          {
+            "name": "probe-admin-ui-http",
             "properties": {
               "protocol": "Tcp",
               "port": 12400,
+              "intervalInSeconds": 15,
+              "numberOfProbes": 2
+            }
+          },
+          {
+            "name": "probe-admin-ui-https",
+            "properties": {
+              "protocol": "Tcp",
+              "port": 12443,
               "intervalInSeconds": 15,
               "numberOfProbes": 2
             }
@@ -130,8 +148,8 @@
       }
     },
     {
-      "comments": "## Primary Admin UI Inbound Rule ##",
-      "name": "[concat(variables('LBName'), '/', 'primary-admin-ui', copyIndex())]",
+      "comments": "## Primary Admin UI http Inbound Rule ##",
+      "name": "[concat(variables('LBName'), '/', 'primary-admin-ui-http', copyIndex())]",
       "type": "Microsoft.Network/loadBalancers/inboundNatRules",
       "apiVersion": "2019-09-01",
       "location": "[resourceGroup().location]",
@@ -149,6 +167,29 @@
         "protocol": "tcp",
         "frontendPort": "[copyIndex(3000)]",
         "backendPort": 12400,
+        "enableFloatingIP": false
+      }
+    },
+    {
+      "comments": "## Primary Admin UI https Inbound Rule ##",
+      "name": "[concat(variables('LBName'), '/', 'primary-admin-ui-https', copyIndex())]",
+      "type": "Microsoft.Network/loadBalancers/inboundNatRules",
+      "apiVersion": "2019-09-01",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "lbPrimaryUiLoop",
+        "count": "[parameters('primaryCount')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/loadBalancers/', variables('LBName'))]"
+      ],
+      "properties": {
+        "frontendIPConfiguration": {
+          "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
+        },
+        "protocol": "tcp",
+        "frontendPort": "[copyIndex(3000)]",
+        "backendPort": 12443,
         "enableFloatingIP": false
       }
     },

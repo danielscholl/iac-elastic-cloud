@@ -71,7 +71,7 @@
             }
           },
           {
-            "name": "allow-admin",
+            "name": "allow-admin-http",
             "properties": {
               "description": "Allow Admin UI",
               "priority": 1005,
@@ -85,30 +85,44 @@
             }
           },
           {
+            "name": "allow-admin-https",
+            "properties": {
+              "description": "Allow Secure Admin UI",
+              "priority": 1006,
+              "direction": "Inbound",
+              "protocol": "Tcp",
+              "sourceAddressPrefix": "[parameters('remoteAccessACL')]",
+              "sourcePortRange": "*",
+              "destinationAddressPrefix": "*",
+              "destinationPortRange": "12443",
+              "access": "Allow"
+            }
+          },
+          {
             "name": "allow-http",
             "properties": {
-              "description": "Allow Web",
-              "priority": 1010,
+              "description": "Allow http",
+              "priority": 1007,
               "direction": "Inbound",
               "protocol": "Tcp",
               "sourceAddressPrefix": "*",
               "sourcePortRange": "*",
               "destinationAddressPrefix": "*",
-              "destinationPortRange": "80",
+              "destinationPortRange": "12400",
               "access": "Allow"
             }
           },
           {
             "name": "allow-https",
             "properties": {
-              "description": "Allow Secure Web",
-              "priority": 1020,
+              "description": "Allow https",
+              "priority": 1008,
               "direction": "Inbound",
               "protocol": "Tcp",
               "sourceAddressPrefix": "*",
               "sourcePortRange": "*",
               "destinationAddressPrefix": "*",
-              "destinationPortRange": "443",
+              "destinationPortRange": "12400",
               "access": "Allow"
             }
           }
