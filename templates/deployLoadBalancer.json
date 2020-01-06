@@ -165,7 +165,7 @@
           "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
         },
         "protocol": "tcp",
-        "frontendPort": "[copyIndex(3000)]",
+        "frontendPort": "[copyIndex(8000)]",
         "backendPort": 12400,
         "enableFloatingIP": false
       }
@@ -188,7 +188,7 @@
           "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
         },
         "protocol": "tcp",
-        "frontendPort": "[copyIndex(3000)]",
+        "frontendPort": "[copyIndex(8443)]",
         "backendPort": 12443,
         "enableFloatingIP": false
       }
