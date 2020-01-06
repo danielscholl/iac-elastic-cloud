@@ -18,9 +18,11 @@ if [ -z $AZURE_LOCATION ]; then
   AZURE_LOCATION="eastus"
 fi
 if [ -z $UNIQUE ]; then
-  # //TODO: Detect OS if Mac use jot otherwise use shuf
-  # UNIQUE=$(shuf -i 100-999 -n 1)
-  UNIQUE=$(jot -r 1  100 999)
+  if [[ "$OSTYPE" == "darwin"* ]]; then
+    UNIQUE=$(jot -r 1  100 999)
+  else
+    UNIQUE=$(shuf -i 100-999 -n 1)
+  fi
 fi
 if [ ! -z $1 ]; then ALLOCATORS=$1; fi
 if [ -z $ALLOCATORS ]; then
@@ -44,16 +46,14 @@ PRINCIPAL_NAME=${BASE}-${UNIQUE}
 
 function CreateSSHKeys() {
   # Required Argument $1 = SSH_USER
-  if [ -d ~/.ssh ]
+  if [ ! -d ~/.ssh ]
   then
-    tput setaf 3;  echo "SSH Keys for User $1: "; tput sgr0
-  else
     local _BASE_DIR = ${pwd}
     mkdir ~/.ssh && cd ~/.ssh
     ssh-keygen -t rsa -b 2048 -C $1 -f id_rsa && cd $_BASE_DIR
   fi
 
- _result=`cat ~/.ssh/id_rsa.pub`
+ _result=`cat ~/.ssh/id_rsa.pub |awk '{print $(NF-1), $NF}'`
  echo $_result
 }
 
@@ -66,17 +66,19 @@ function CreateSSHKeys() {
 tput setaf 2; echo 'Creating SSH Keys...' ; tput sgr0
 AZURE_USER=$(az account show --query user.name -otsv)
 LINUX_USER=(${AZURE_USER//@/ })
-CreateSSHKeys $AZURE_USER
+SSH_KEY=$(CreateSSHKeys $AZURE_USER)
 
 tput setaf 2; echo 'Deploying ARM Template...' ; tput sgr0
 if [ -f ./params.json ]; then PARAMS="params.json"; else PARAMS="azuredeploy.parameters.json"; fi
 
+echo $SSH_KEY
+exit
 az deployment create --template-file azuredeploy.json  \
   --location $AZURE_LOCATION \
   --parameters $PARAMS \
   --parameters random=$UNIQUE \
-  --parameters adminUserName=$LINUX_USER
-
+  --parameters adminUserName=$LINUX_USER \
+  --parameters adminSshKey=$SSH_KEY
 
 ##############################
 ## Create Ansible Inventory ##
@@ -120,13 +122,3 @@ $(for (( c=0; c<$DIRECTORS; c++ )); do echo "director-vm$c"; done)
 $(for (( c=0; c<$ALLOCATORS; c++ )); do echo "allocator-vm$c"; done)
 
 EOF
-# cat > ${INVENTORY}/hosts << EOF
-# $(for (( c=0; c<$COUNT; c++ )); do echo "vm$c ansible_host=$LB_IP ansible_port=$(($BASE_PORT + $c))"; done)
-
-# [primary]
-
-# [director]
-
-# [allocator]
-
-# EOF

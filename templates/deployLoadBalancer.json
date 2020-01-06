@@ -41,7 +41,7 @@
       "comments": "## Public IP ##",
       "name": "[variables('PublicIpName')]",
       "type": "Microsoft.Network/publicIPAddresses",
-      "apiVersion": "2018-08-01",
+      "apiVersion": "2019-09-01",
       "location": "[resourceGroup().location]",
       "sku": {
         "name": "Standard"
@@ -53,6 +53,9 @@
       },
       "properties": {
         "publicIPAllocationMethod": "Static"
+      },
+      "dnsSettings": {
+        "domainNameLabel": "[resourceGroup().name]"
       }
     },
     {
