@@ -53,9 +53,6 @@
       },
       "properties": {
         "publicIPAllocationMethod": "Static"
-      },
-      "dnsSettings": {
-        "domainNameLabel": "[resourceGroup().name]"
       }
     },
     {
